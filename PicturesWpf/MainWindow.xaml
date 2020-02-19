@@ -1,0 +1,67 @@
+﻿<Window x:Class="PicturesWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open"
+            Executed="OpenCmdExecuted"
+            CanExecute="OpenCmdCanExecute"/>
+        <CommandBinding Command="ApplicationCommands.Save"
+            Executed="SaveCmdExecuted"
+            CanExecute="SaveCmdCanExecute"/>
+        <CommandBinding Command="ApplicationCommands.New"
+            Executed="NewCmdExecuted"
+            CanExecute="NewCmdCanExecute"/>
+        <CommandBinding Command="ApplicationCommands.Delete"
+            Executed="DeleteCmdExecuted"
+            CanExecute="DeleteCmdCanExecute"/>
+    </Window.CommandBindings>
+    <Window.Resources>  <!-- rPictures,  listItemTemplate -->       
+        <DataTemplate x:Key="listItemTemplate">
+            <Image Source="{Binding Path=ImageSrc}" Width="50" ToolTip="{Binding Path=Title}"
+                  MouseDown="Image_MouseDown"  AllowDrop="True" Drop="Image_Drop" />
+        </DataTemplate>
+    </Window.Resources>
+
+    
+    <DockPanel>
+        <Menu DockPanel.Dock="Top"  Background="White" BorderBrush ="Black">
+            <MenuItem Header="_File">
+                <MenuItem Command="ApplicationCommands.Open" />
+                <MenuItem Command="ApplicationCommands.Save" />
+                <Separator/>
+                <MenuItem Header ="_Exit" Click ="FileExit_Click"/>
+            </MenuItem>
+             <MenuItem Header="_Edit">
+                <MenuItem Command="ApplicationCommands.New" />
+                <MenuItem Command="ApplicationCommands.Delete" />
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="450*"/>
+            </Grid.ColumnDefinitions >
+            <Grid Grid.Column = "1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="400*"/>
+                    <RowDefinition Height="50*"/>
+                </Grid.RowDefinitions>
+                <Image Name="currentImage" Margin="8"
+                        Source="{Binding ElementName=picBox, Path=SelectedItem.ImageSrc}"/>
+
+                <TextBox Name="currentTitle" Grid.Row="1"
+                            Text="{Binding ElementName=picBox, Path=SelectedItem.Title}" FontSize="22" HorizontalAlignment="Center"></TextBox>
+            </Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+                <ListBox x:Name="picBox" SelectionMode="Single" Margin="8px"                             
+                            ItemTemplate="{StaticResource listItemTemplate}"
+                             />
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+    
+</Window>
