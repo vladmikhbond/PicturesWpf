@@ -18,20 +18,20 @@ namespace PicturesWpf.Models
 
 
 
-    public class Pictures : ObservableCollection<Picture>
+    public class PictureCollection : ObservableCollection<Picture>
     {
         readonly string _path;
        
         const string TEXT = "titles.txt";
 
-        public Pictures(string path)
+        public PictureCollection(string path)
         {
             Load(path);
             _path = path;
             
         }
 
-        public Pictures() {
+        public PictureCollection() {
             Add(new Picture { 
                 FileName = "", Title = "Anonimus", 
                 ImageSrc = new BitmapImage(new Uri("pack://application:,,,/Images/Anonimus.png")) 

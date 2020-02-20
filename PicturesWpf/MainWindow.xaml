@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="MainWindow" MinHeight="200" MinWidth="300" Loaded="Window_Loaded">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open"
             Executed="OpenCmdExecuted"
@@ -19,13 +19,12 @@
             Executed="DeleteCmdExecuted"
             CanExecute="DeleteCmdCanExecute"/>
     </Window.CommandBindings>
-    <Window.Resources>  <!-- rPictures,  listItemTemplate -->       
+    <Window.Resources>      
         <DataTemplate x:Key="listItemTemplate">
             <Image Source="{Binding Path=ImageSrc}" Width="50" ToolTip="{Binding Path=Title}"
                   MouseDown="Image_MouseDown"  AllowDrop="True" Drop="Image_Drop" />
         </DataTemplate>
     </Window.Resources>
-
     
     <DockPanel>
         <Menu DockPanel.Dock="Top"  Background="White" BorderBrush ="Black">
@@ -42,25 +41,27 @@
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50*"/>
-                <ColumnDefinition Width="450*"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="250*"/>
             </Grid.ColumnDefinitions >
-            <Grid Grid.Column = "1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="400*"/>
-                    <RowDefinition Height="50*"/>
-                </Grid.RowDefinitions>
-                <Image Name="currentImage" Margin="8"
-                        Source="{Binding ElementName=picBox, Path=SelectedItem.ImageSrc}"/>
-
-                <TextBox Name="currentTitle" Grid.Row="1"
-                            Text="{Binding ElementName=picBox, Path=SelectedItem.Title}" FontSize="22" HorizontalAlignment="Center"></TextBox>
-            </Grid>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
                 <ListBox x:Name="picBox" SelectionMode="Single" Margin="8px"                             
                             ItemTemplate="{StaticResource listItemTemplate}"
                              />
             </ScrollViewer>
+
+            <Grid Grid.Column = "1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="400*"/>
+                    <RowDefinition Height="70"/>
+                </Grid.RowDefinitions>
+                <Image Name="currentImage"
+                        Source="{Binding ElementName=picBox, Path=SelectedItem.ImageSrc}"/>
+
+                <TextBox Name="currentTitle" Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="50"
+                         Margin="8" Padding="8" FontSize="18"                         
+                         Text="{Binding ElementName=picBox, Path=SelectedItem.Title}"/>
+            </Grid>
         </Grid>
     </DockPanel>
     

@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
+
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,12 +24,12 @@ namespace PicturesWpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        Pictures pictures;
+        PictureCollection pictures;
 
         public MainWindow()
         {
             InitializeComponent();
-            pictures = new Pictures();
+            pictures = new PictureCollection();
             picBox.ItemsSource = pictures;
             picBox.SelectedIndex = 0;
         }
@@ -44,6 +44,8 @@ namespace PicturesWpf
             Close();
         }
 
+        #region Command handlers  --------------------------------------------
+
         private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -51,12 +53,12 @@ namespace PicturesWpf
 
         private void OpenCmdExecuted(object sender, RoutedEventArgs e)
         {
-            using (var dialog = new FolderBrowserDialog())
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
                 dialog.SelectedPath = @"C:\temp";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    pictures = new Pictures(dialog.SelectedPath);
+                    pictures = new PictureCollection(dialog.SelectedPath);
                     if (pictures.Count > 0)
                     {
                         picBox.ItemsSource = pictures;
@@ -88,7 +90,7 @@ namespace PicturesWpf
 
         private void NewCmdExecuted(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            var openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
                 picBox.SelectedItem = pictures.New(openFileDialog.FileName);
@@ -105,35 +107,37 @@ namespace PicturesWpf
             pictures.RemoveAt(picBox.SelectedIndex);
         }
 
+        #endregion
+
+        #region Dragging  --------------------------------------------
+
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            int n = picBox.SelectedIndex;
-            if (n != -1 && e.RightButton == MouseButtonState.Pressed)
+            int iSource = picBox.SelectedIndex;
+            if (iSource != -1 && e.RightButton == MouseButtonState.Pressed)
             {
-                DragDrop.DoDragDrop(sender as Image, n.ToString(), System.Windows.DragDropEffects.Move);
+                DragDrop.DoDragDrop(sender as Image, iSource.ToString(), DragDropEffects.Move);
             }
         }
 
-        private void Image_Drop(object sender, System.Windows.DragEventArgs e)
+        private void Image_Drop(object sender, DragEventArgs e)
         {
-            int iSour = Convert.ToInt32(e.Data.GetData(System.Windows.DataFormats.Text));
-            int iDest = -1;
-
             var image = sender as Image;
-            for (int i = 0; i < pictures.Count; i++)
+            int iSource = Convert.ToInt32(e.Data.GetData(DataFormats.Text));
+            int iDest = 0;
+
+            for (;  iDest < pictures.Count; iDest++)
             {
-                if (image.Source == pictures[i].ImageSrc && i != iSour) {
-                    iDest = i;
-                    break;
+                if (image.Source == pictures[iDest].ImageSrc && iDest != iSource) {
+                    // move item
+                    var t = pictures[iSource];
+                    pictures.RemoveAt(iSource);
+                    pictures.Insert(iDest, t);
+                    picBox.SelectedIndex = iDest;
+                    return;
                 }
-            }
-            if (iDest != -1) {
-                var t = pictures[iSour];
-                pictures.RemoveAt(iSour);
-                pictures.Insert(iDest, t);
-                picBox.SelectedIndex = iDest;
-            }
-            
+            }            
         }
+        #endregion
     }
 }
