@@ -24,12 +24,11 @@ namespace PicturesWpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        PictureCollection pictures;
+        PictureCollection pictures = new PictureCollection();
 
         public MainWindow()
         {
             InitializeComponent();
-            pictures = new PictureCollection();
             picBox.ItemsSource = pictures;
             picBox.SelectedIndex = 0;
         }
@@ -58,15 +57,15 @@ namespace PicturesWpf
                 dialog.SelectedPath = @"C:\temp";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    pictures = new PictureCollection(dialog.SelectedPath);
-                    if (pictures.Count > 0)
+                    try
                     {
+                        pictures.Load(dialog.SelectedPath);
                         picBox.ItemsSource = pictures;
                         picBox.SelectedIndex = 0;
                     }
-                    else
+                    catch (ApplicationException ex)
                     {
-                        System.Windows.MessageBox.Show("Error. No pictures.");
+                        MessageBox.Show(ex.Message);
                     }
                 }
             }
@@ -79,7 +78,6 @@ namespace PicturesWpf
 
         private void SaveCmdExecuted(object sender, RoutedEventArgs e)
         {
-
             pictures.Save();
         }
 

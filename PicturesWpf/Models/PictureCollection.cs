@@ -11,45 +11,55 @@ namespace PicturesWpf.Models
 {
     public class PictureCollection : ObservableCollection<Picture>
     {
-        readonly string _path;
+        private string _path;
        
         const string TEXT = "titles.txt";
-
-        public PictureCollection(string path)
-        {
-            Load(path);
-            _path = path;
-            
-        }
 
         public PictureCollection() {
             Add(new Picture { 
                 FileName = "", Title = "Anonimus", 
                 ImageSrc = new BitmapImage(new Uri("pack://application:,,,/Images/Anonimus.png")) 
-            });                
+            });
+            _path = "";
+        }
+
+        private List<Picture> ReadData(string path)
+        {
+            string filePath = Path.Combine(path, TEXT);
+            string[] lines = File.ReadAllText(filePath).Trim().Split('\n');
+            var lst = new List<Picture>();
+            for (int i = 0; i < lines.Length; i += 2)
+            {
+                string id = lines[i].Trim();
+                string imgPath = Path.Combine(path, id);
+                lst.Add(new Picture
+                {
+                    FileName = id,
+                    Title = lines[i + 1].Trim(),
+                    ImageSrc = new BitmapImage(new Uri(imgPath))
+                });
+            }           
+            return lst;
         }
 
         public void Load(string path)
         {
-            string filePath = Path.Combine(path, TEXT);
-            string[] lines = File.ReadAllText(filePath).Trim().Split('\n');
-            this.Clear();
-            for (int i = 0; i < lines.Length; i += 2)
+            try
             {
-                string id = lines[i].Trim();
-                string title = lines[i+1].Trim();
-                string imgPath = Path.Combine(path, id);
-                Add(new Picture
-                {
-                    FileName = id, Title = title,
-                    ImageSrc = new BitmapImage(new Uri(imgPath))
-                });
-            } 
+                var lst = ReadData(path);
+                ClearItems();
+                lst.ForEach(p => this.Add(p));
+                _path = path;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("No pictures.", ex);
+            }
         }
 
         public void Save()
         {
-            if (_path == null)
+            if (_path == "")
                 return;
             string text = string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
             string filePath = Path.Combine(_path, TEXT);
