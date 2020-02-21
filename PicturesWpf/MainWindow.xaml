@@ -21,8 +21,13 @@
     </Window.CommandBindings>
     <Window.Resources>      
         <DataTemplate x:Key="listItemTemplate">
+
             <Image Source="{Binding Path=ImageSrc}" Width="50" ToolTip="{Binding Path=Title}"
-                  MouseDown="Image_MouseDown"  AllowDrop="True" Drop="Image_Drop" />
+                  MouseDown="Image_MouseDown"  AllowDrop="True" Drop="Image_Drop" RenderTransformOrigin="0.5, 0.5">
+                <Image.RenderTransform>
+                    <RotateTransform Angle="90"/>
+                </Image.RenderTransform>
+            </Image>
         </DataTemplate>
     </Window.Resources>
     
@@ -44,7 +49,15 @@
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition Width="250*"/>
             </Grid.ColumnDefinitions >
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden" RenderTransformOrigin="0, 0">
+                <ScrollViewer.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform X="50" Y="100" />
+                    </TransformGroup>
+                </ScrollViewer.RenderTransform>
+                
+
                 <ListBox x:Name="picBox" SelectionMode="Single" Margin="8px"                             
                             ItemTemplate="{StaticResource listItemTemplate}"
                              />
