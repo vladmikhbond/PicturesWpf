@@ -53,18 +53,14 @@
                 <RowDefinition Height="120"/>
             </Grid.RowDefinitions >
 
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition Width="300*"/>
-                </Grid.ColumnDefinitions>
-                <Image x:Name="currentImage" Grid.Column="0"
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Image x:Name="currentImage" Margin="8" 
                         Source="{Binding ElementName=picBox, Path=SelectedItem.ImageSrc}"/>
 
-                <TextBox x:Name="currentTitle" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Height="50"
+                <TextBox x:Name="currentTitle" TextWrapping="Wrap" AcceptsReturn="True" 
                          Margin="8" Padding="8" FontSize="18"                         
                          Text="{Binding ElementName=picBox, Path=SelectedItem.Title}"/>
-            </Grid>
+            </StackPanel>
 
             <ScrollViewer x:Name="picViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="8px" >
                 <ListBox x:Name="picBox" SelectionMode="Single"                          
