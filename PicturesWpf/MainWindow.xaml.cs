@@ -54,7 +54,7 @@ namespace PicturesWpf
         {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
-                dialog.SelectedPath = @"C:\temp";
+                dialog.SelectedPath = @"C:\temp\dinos";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     try

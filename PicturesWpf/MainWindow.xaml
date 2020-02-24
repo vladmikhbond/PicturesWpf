@@ -21,7 +21,7 @@
     </Window.CommandBindings>
     <Window.Resources>
         <DataTemplate x:Key="listItemTemplate">
-            <Image Source="{Binding Path=ImageSrc}" Height="90" ToolTip="{Binding Path=Title}" Margin="-5"
+            <Image Source="{Binding Path=ImageSrc}" Height="90" Width="90" ToolTip="{Binding Path=Title}" Margin="0"
                   MouseDown="Image_MouseDown"  AllowDrop="True" Drop="Image_Drop" RenderTransformOrigin="0.5, 0.5">
                 <Image.RenderTransform>
                     <TransformGroup>
@@ -49,21 +49,26 @@
         </Menu>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="350*"/>
+                <RowDefinition Height="120*"/>
                 <RowDefinition Height="120"/>
             </Grid.RowDefinitions >
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Image x:Name="currentImage" Margin="8" 
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60*"/>
+                    <ColumnDefinition Width="40*"/>
+                </Grid.ColumnDefinitions >
+
+                <Image x:Name="currentImage" Grid.Column="0" Margin="8" 
                         Source="{Binding ElementName=picBox, Path=SelectedItem.ImageSrc}"/>
 
-                <TextBox x:Name="currentTitle" TextWrapping="Wrap" AcceptsReturn="True" 
+                <TextBox x:Name="currentTitle" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" 
                          Margin="8" Padding="8" FontSize="18"                         
                          Text="{Binding ElementName=picBox, Path=SelectedItem.Title}"/>
-            </StackPanel>
+            </Grid>
 
-            <ScrollViewer x:Name="picViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="8px" >
-                <ListBox x:Name="picBox" SelectionMode="Single"                          
+            <ScrollViewer x:Name="picViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="10px" >
+                <ListBox x:Name="picBox" SelectionMode="Single"  Margin="10px"                         
                             ItemTemplate="{StaticResource listItemTemplate}" RenderTransformOrigin="0, 0">
                     <ListBox.RenderTransform>
                         <TransformGroup>

@@ -13,7 +13,7 @@ namespace PicturesWpf.Models
     {
         private string _path;
        
-        const string TEXT = "titles.txt";
+        const string TEXT = "index.txt";
 
         public PictureCollection() {
             Add(new Picture { 
