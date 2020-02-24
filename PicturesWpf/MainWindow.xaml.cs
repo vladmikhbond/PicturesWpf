@@ -138,10 +138,5 @@ namespace PicturesWpf
         }
         #endregion
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            picViewer.Width = this.ActualWidth - 60;
-            picBox.Height = this.ActualWidth - 20;
-        }
     }
 }

@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" MinHeight="200" MinWidth="300" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
+        Title="MainWindow" MinHeight="400" MinWidth="300" Loaded="Window_Loaded" >
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open"
             Executed="OpenCmdExecuted"
@@ -21,15 +21,11 @@
     </Window.CommandBindings>
     <Window.Resources>
         <DataTemplate x:Key="listItemTemplate">
-            <Image Source="{Binding Path=ImageSrc}" Height="90" Width="90" ToolTip="{Binding Path=Title}" Margin="0"
+            <Image Source="{Binding Path=ImageSrc}" Height="90" Width="90" ToolTip="{Binding Path=Title}" 
                   MouseDown="Image_MouseDown"  AllowDrop="True" Drop="Image_Drop" RenderTransformOrigin="0.5, 0.5">
-                <Image.RenderTransform>
-                    <TransformGroup>
-                        <RotateTransform Angle="90" />
-                        <TranslateTransform X="10"/>
-                    </TransformGroup>
-
-                </Image.RenderTransform>
+                <Image.LayoutTransform>
+                    <RotateTransform Angle="90" />
+                </Image.LayoutTransform>
             </Image>
         </DataTemplate>
     </Window.Resources>
@@ -47,10 +43,10 @@
                 <MenuItem Command="ApplicationCommands.Delete" />
             </MenuItem>
         </Menu>
-        <Grid>
+        <Grid Background="AliceBlue">
             <Grid.RowDefinitions>
                 <RowDefinition Height="120*"/>
-                <RowDefinition Height="120"/>
+                <RowDefinition Height="130"/>
             </Grid.RowDefinitions >
 
             <Grid Grid.Row="0">
@@ -58,24 +54,22 @@
                     <ColumnDefinition Width="60*"/>
                     <ColumnDefinition Width="40*"/>
                 </Grid.ColumnDefinitions >
-
-                <Image x:Name="currentImage" Grid.Column="0" Margin="8" 
+               
+                <Image x:Name="currentImage" Grid.Column="0" Margin="10" 
                         Source="{Binding ElementName=picBox, Path=SelectedItem.ImageSrc}"/>
-
+               
                 <TextBox x:Name="currentTitle" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" 
-                         Margin="8" Padding="8" FontSize="18"                         
+                         Margin="0,10,10,10" Padding="8" FontSize="18"                          
                          Text="{Binding ElementName=picBox, Path=SelectedItem.Title}"/>
             </Grid>
+            <!-- 4: левый, верхний, правый, нижний      2: hor, ver -->
 
-            <ScrollViewer x:Name="picViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="10px" >
-                <ListBox x:Name="picBox" SelectionMode="Single"  Margin="10px"                         
-                            ItemTemplate="{StaticResource listItemTemplate}" RenderTransformOrigin="0, 0">
-                    <ListBox.RenderTransform>
-                        <TransformGroup>
-                            <RotateTransform Angle="-90" />
-                            <TranslateTransform Y="100" />
-                        </TransformGroup>
-                    </ListBox.RenderTransform>                      
+            <ScrollViewer x:Name="picViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto" Margin="10,10,10,10" >
+                <ListBox x:Name="picBox" SelectionMode="Single" Background="WhiteSmoke"                        
+                            ItemTemplate="{StaticResource listItemTemplate}" RenderTransformOrigin="0, 0"  BorderThickness="1">
+                    <ListBox.LayoutTransform>
+                        <RotateTransform Angle="-90" />
+                    </ListBox.LayoutTransform>                      
                 </ListBox>
             </ScrollViewer>
 
