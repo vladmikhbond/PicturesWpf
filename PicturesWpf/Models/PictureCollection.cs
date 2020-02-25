@@ -61,10 +61,27 @@ namespace PicturesWpf.Models
         {
             if (_path == "")
                 return;
+            // save index
             string text = string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
             string filePath = Path.Combine(_path, TEXT);
-            File.WriteAllText(filePath, text);           
+            File.WriteAllText(filePath, text);
+            // save pictures
+            foreach (var picture in this)
+                SaveImage(picture.ImageSrc, Path.Combine(_path, picture.FileName));
+
         }
+
+        private void SaveImage(BitmapImage bmp, string fname)
+        {
+            WriteableBitmap wbitmap = new WriteableBitmap(bmp);
+            using (FileStream stream = new FileStream(fname, FileMode.Create))
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(wbitmap));
+                encoder.Save(stream);
+            }
+        }
+
 
         public Picture New(string fileName)
         {
@@ -77,6 +94,9 @@ namespace PicturesWpf.Models
             Add(newPicture);
             return newPicture;
         }
+
+
+
     }
 
 }
