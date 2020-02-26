@@ -13,7 +13,7 @@ namespace PicturesWpf.Models
     {
         private string _path;
        
-        const string TEXT = "index.txt";
+        const string INDEX = "index.txt";
 
         public PictureCollection() {
             Add(new Picture { 
@@ -23,27 +23,9 @@ namespace PicturesWpf.Models
             _path = "";
         }
 
-        private List<Picture> ReadData(string path)
-        {
-            string filePath = Path.Combine(path, TEXT);
-            string[] lines = File.ReadAllText(filePath).Trim().Split('\n');
-            var lst = new List<Picture>();
-            for (int i = 0; i < lines.Length; i += 2)
-            {
-                string id = lines[i].Trim();
-                string imgPath = Path.Combine(path, id);
-                lst.Add(new Picture
-                {
-                    FileName = id,
-                    Title = lines[i + 1].Trim(),
-                    ImageSrc = new BitmapImage(new Uri(imgPath))
-                });
-            }           
-            return lst;
-        }
-
         public void Load(string path)
         {
+
             try
             {
                 var lst = ReadData(path);
@@ -63,22 +45,12 @@ namespace PicturesWpf.Models
                 return;
             // save index
             string text = string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
-            string filePath = Path.Combine(_path, TEXT);
+            string filePath = Path.Combine(_path, INDEX);
             File.WriteAllText(filePath, text);
             // save pictures
             foreach (var picture in this)
-                SaveImage(picture.ImageSrc, Path.Combine(_path, picture.FileName));
-
-        }
-
-        private void SaveImage(BitmapImage bmp, string fname)
-        {
-            WriteableBitmap wbitmap = new WriteableBitmap(bmp);
-            using (FileStream stream = new FileStream(fname, FileMode.Create))
             {
-                PngBitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(wbitmap));
-                encoder.Save(stream);
+                WriteImage(picture.ImageSrc, Path.Combine(_path, picture.FileName));
             }
         }
 
@@ -95,6 +67,58 @@ namespace PicturesWpf.Models
             return newPicture;
         }
 
+        private static List<Picture> ReadData(string path)
+        {
+            string filePath = Path.Combine(path, INDEX);
+            string[] lines = File.ReadAllText(filePath).Trim().Split('\n');
+
+            var pictures = new List<Picture>();
+            for (int i = 0; i < lines.Length; i += 2)
+            {
+                string id = lines[i].Trim();
+                string title = lines[i + 1].Trim();
+                string imgPath = Path.Combine(path, id);
+                var bitmap = new BitmapImage();
+                using (var stream = File.OpenRead(imgPath))
+                {
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                }
+
+                pictures.Add(new Picture
+                {
+                    FileName = id,
+                    Title = title,
+                    ImageSrc = bitmap
+                });
+            }
+            return pictures;
+        }
+
+        private static void WriteImage(BitmapImage bmp, string fname)
+        {
+            WriteableBitmap wbitmap = new WriteableBitmap(bmp);
+            using (FileStream stream = new FileStream(fname, FileMode.Create))
+            {
+                BitmapEncoder encoder = null;
+                switch (Path.GetExtension(fname))
+                {
+                    case "png":
+                        encoder = new PngBitmapEncoder();
+                        break;
+                    case "jpg":
+                        encoder = new JpegBitmapEncoder();
+                        break;
+                    case "gif":
+                        encoder = new GifBitmapEncoder();
+                        break;
+                }
+                encoder.Frames.Add(BitmapFrame.Create(wbitmap));
+                encoder.Save(stream);
+            }
+        }
 
 
     }

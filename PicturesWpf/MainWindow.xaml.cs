@@ -45,6 +45,16 @@ namespace PicturesWpf
 
         #region Command handlers  --------------------------------------------
 
+        private void NewCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void NewCmdExecuted(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -81,12 +91,23 @@ namespace PicturesWpf
             pictures.Save();
         }
 
-        private void NewCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void SaveAsCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
 
-        private void NewCmdExecuted(object sender, RoutedEventArgs e)
+        private void SaveAsCmdExecuted(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private void EditNewCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void EditNewCmdExecuted(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)

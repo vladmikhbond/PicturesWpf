@@ -6,15 +6,21 @@
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="400" MinWidth="300" Loaded="Window_Loaded" >
     <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.New"
+            Executed="NewCmdExecuted"
+            CanExecute="NewCmdCanExecute"/>
         <CommandBinding Command="ApplicationCommands.Open"
             Executed="OpenCmdExecuted"
             CanExecute="OpenCmdCanExecute"/>
         <CommandBinding Command="ApplicationCommands.Save"
             Executed="SaveCmdExecuted"
             CanExecute="SaveCmdCanExecute"/>
+        <CommandBinding Command="ApplicationCommands.SaveAs"
+            Executed="SaveAsCmdExecuted"
+            CanExecute="SaveAsCmdCanExecute"/>
         <CommandBinding Command="ApplicationCommands.New"
-            Executed="NewCmdExecuted"
-            CanExecute="NewCmdCanExecute"/>
+            Executed="EditNewCmdExecuted"
+            CanExecute="EditNewCmdCanExecute"/>
         <CommandBinding Command="ApplicationCommands.Delete"
             Executed="DeleteCmdExecuted"
             CanExecute="DeleteCmdCanExecute"/>
@@ -33,8 +39,10 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top"  Background="White" BorderBrush ="Black">
             <MenuItem Header="_File">
+                <MenuItem Command="ApplicationCommands.New" />
                 <MenuItem Command="ApplicationCommands.Open" />
                 <MenuItem Command="ApplicationCommands.Save" />
+                <MenuItem Command="ApplicationCommands.SaveAs" />
                 <Separator/>
                 <MenuItem Header ="_Exit" Click ="FileExit_Click"/>
             </MenuItem>
