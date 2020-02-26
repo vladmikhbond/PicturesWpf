@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PicturesWpf.Models;
+using System.Configuration;
 
 namespace PicturesWpf
 {
@@ -29,6 +30,7 @@ namespace PicturesWpf
         public MainWindow()
         {
             InitializeComponent();
+            pictures.Load(ConfigurationManager.AppSettings.Get("path"));
             picBox.ItemsSource = pictures;
             picBox.SelectedIndex = 0;
         }
@@ -52,7 +54,7 @@ namespace PicturesWpf
 
         private void NewCmdExecuted(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            pictures.Clear();
         }
 
         private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -64,7 +66,7 @@ namespace PicturesWpf
         {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
-                dialog.SelectedPath = @"C:\temp\dinos";
+                dialog.SelectedPath = ConfigurationManager.AppSettings.Get("path"); 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     try
@@ -72,6 +74,7 @@ namespace PicturesWpf
                         pictures.Load(dialog.SelectedPath);
                         picBox.ItemsSource = pictures;
                         picBox.SelectedIndex = 0;
+                        ConfigurationManager.AppSettings.Set("path", dialog.SelectedPath);
                     }
                     catch (ApplicationException ex)
                     {
@@ -83,7 +86,7 @@ namespace PicturesWpf
 
         private void SaveCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = !string.IsNullOrEmpty(pictures.Path);
         }
 
         private void SaveCmdExecuted(object sender, RoutedEventArgs e)
@@ -98,7 +101,23 @@ namespace PicturesWpf
 
         private void SaveAsCmdExecuted(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                dialog.SelectedPath = ConfigurationManager.AppSettings["path"];
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    try
+                    {   
+                        pictures.Save(dialog.SelectedPath);                        
+                        ConfigurationManager.AppSettings.Set("path", dialog.SelectedPath);
+                    }
+                    catch (ApplicationException ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+            }
+
         }
 
 

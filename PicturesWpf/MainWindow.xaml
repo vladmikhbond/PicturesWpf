@@ -18,7 +18,7 @@
         <CommandBinding Command="ApplicationCommands.SaveAs"
             Executed="SaveAsCmdExecuted"
             CanExecute="SaveAsCmdCanExecute"/>
-        <CommandBinding Command="ApplicationCommands.New"
+        <CommandBinding Command="MediaCommands.Play"
             Executed="EditNewCmdExecuted"
             CanExecute="EditNewCmdCanExecute"/>
         <CommandBinding Command="ApplicationCommands.Delete"
@@ -44,10 +44,10 @@
                 <MenuItem Command="ApplicationCommands.Save" />
                 <MenuItem Command="ApplicationCommands.SaveAs" />
                 <Separator/>
-                <MenuItem Header ="_Exit" Click ="FileExit_Click"/>
+                <MenuItem Header ="_Exit" Click ="FileExit_Click" />
             </MenuItem>
              <MenuItem Header="_Edit">
-                <MenuItem Command="ApplicationCommands.New" />
+                <MenuItem Command="MediaCommands.Play" />
                 <MenuItem Command="ApplicationCommands.Delete" />
             </MenuItem>
         </Menu>

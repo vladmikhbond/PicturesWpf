@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using static System.IO.Path;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,27 +12,32 @@ namespace PicturesWpf.Models
 {
     public class PictureCollection : ObservableCollection<Picture>
     {
-        private string _path;
-       
         const string INDEX = "index.txt";
+
+        public string Path { get; private set; }
 
         public PictureCollection() {
             Add(new Picture { 
                 FileName = "", Title = "Anonimus", 
                 ImageSrc = new BitmapImage(new Uri("pack://application:,,,/Images/Anonimus.png")) 
             });
-            _path = "";
+            Path = "";
+        }
+
+        public new void Clear()
+        {
+            base.Clear();
+            Path = "";
         }
 
         public void Load(string path)
         {
-
             try
             {
                 var lst = ReadData(path);
                 ClearItems();
-                lst.ForEach(p => this.Add(p));
-                _path = path;
+                lst.ForEach(p => Add(p));
+                Path = path;
             }
             catch (Exception ex)
             {
@@ -39,18 +45,22 @@ namespace PicturesWpf.Models
             }
         }
 
-        public void Save()
+        public void Save(string path=null)
         {
-            if (_path == "")
-                return;
-            // save index
-            string text = string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
-            string filePath = Path.Combine(_path, INDEX);
-            File.WriteAllText(filePath, text);
-            // save pictures
-            foreach (var picture in this)
+            if (path != null)
+                Path = path;
+            try {
+                string text = string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
+                string filePath = Combine(Path, INDEX);
+                File.WriteAllText(filePath, text); 
+                foreach (var picture in this)
+                {
+                    WriteImage(picture.ImageSrc, Combine(Path, picture.FileName));
+                }
+            }
+            catch (Exception ex)
             {
-                WriteImage(picture.ImageSrc, Path.Combine(_path, picture.FileName));
+                throw new ApplicationException("Cannot save the collection.", ex);
             }
         }
 
@@ -59,7 +69,7 @@ namespace PicturesWpf.Models
         {
             var newPicture = new Picture
             {
-                FileName = Path.GetFileName(fileName),
+                FileName = GetFileName(fileName),
                 Title = "No Title",
                 ImageSrc = new BitmapImage(new Uri(fileName))
             };
@@ -69,7 +79,7 @@ namespace PicturesWpf.Models
 
         private static List<Picture> ReadData(string path)
         {
-            string filePath = Path.Combine(path, INDEX);
+            string filePath = Combine(path, INDEX);
             string[] lines = File.ReadAllText(filePath).Trim().Split('\n');
 
             var pictures = new List<Picture>();
@@ -77,7 +87,7 @@ namespace PicturesWpf.Models
             {
                 string id = lines[i].Trim();
                 string title = lines[i + 1].Trim();
-                string imgPath = Path.Combine(path, id);
+                string imgPath = Combine(path, id);
                 var bitmap = new BitmapImage();
                 using (var stream = File.OpenRead(imgPath))
                 {
@@ -103,15 +113,15 @@ namespace PicturesWpf.Models
             using (FileStream stream = new FileStream(fname, FileMode.Create))
             {
                 BitmapEncoder encoder = null;
-                switch (Path.GetExtension(fname))
+                switch (GetExtension(fname))
                 {
-                    case "png":
+                    case ".png":
                         encoder = new PngBitmapEncoder();
                         break;
-                    case "jpg":
+                    case ".jpg":
                         encoder = new JpegBitmapEncoder();
                         break;
-                    case "gif":
+                    case ".gif":
                         encoder = new GifBitmapEncoder();
                         break;
                 }
