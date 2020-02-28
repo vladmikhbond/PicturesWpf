@@ -25,12 +25,15 @@ namespace PicturesWpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        PictureCollection pictures = new PictureCollection();
+        readonly PictureCollection pictures = new PictureCollection();
 
         public MainWindow()
         {
             InitializeComponent();
-            pictures.Load(ConfigurationManager.AppSettings.Get("path"));
+
+            string path = ConfigurationManager.AppSettings.Get("path");
+            pictures.Load(path);
+            ResetPath(path);
             picBox.ItemsSource = pictures;
             picBox.SelectedIndex = 0;
         }
@@ -45,8 +48,7 @@ namespace PicturesWpf
             Close();
         }
 
-        #region Command handlers  --------------------------------------------
-
+ 
         private void NewCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -74,7 +76,7 @@ namespace PicturesWpf
                         pictures.Load(dialog.SelectedPath);
                         picBox.ItemsSource = pictures;
                         picBox.SelectedIndex = 0;
-                        ConfigurationManager.AppSettings.Set("path", dialog.SelectedPath);
+                        ResetPath(dialog.SelectedPath);
                     }
                     catch (ApplicationException ex)
                     {
@@ -83,6 +85,14 @@ namespace PicturesWpf
                 }
             }
         }
+
+        private void ResetPath(string path)
+        {
+
+            ConfigurationManager.AppSettings.Set("path", path);
+            Title = $"{path} - Pictures";
+        }
+
 
         private void SaveCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -108,8 +118,8 @@ namespace PicturesWpf
                 {
                     try
                     {   
-                        pictures.Save(dialog.SelectedPath);                        
-                        ConfigurationManager.AppSettings.Set("path", dialog.SelectedPath);
+                        pictures.Save(dialog.SelectedPath);
+                        ResetPath(dialog.SelectedPath);
                     }
                     catch (ApplicationException ex)
                     {
@@ -145,38 +155,44 @@ namespace PicturesWpf
             pictures.RemoveAt(picBox.SelectedIndex);
         }
 
-        #endregion
-
         #region Dragging  --------------------------------------------
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            int iSource = picBox.SelectedIndex;
-            if (iSource != -1 && e.RightButton == MouseButtonState.Pressed)
-            {
-                DragDrop.DoDragDrop(sender as Image, iSource.ToString(), DragDropEffects.Move);
-            }
+            int iSource = IndexOf(sender);
+            DragDrop.DoDragDrop(sender as Image, iSource.ToString(), DragDropEffects.Move);
         }
+
 
         private void Image_Drop(object sender, DragEventArgs e)
-        {
-            var image = sender as Image;
+        {                        
             int iSource = Convert.ToInt32(e.Data.GetData(DataFormats.Text));
-            int iDest = 0;
-
-            for (;  iDest < pictures.Count; iDest++)
+            int iDest = IndexOf(sender);
+            if (iDest != iSource)
             {
-                if (image.Source == pictures[iDest].ImageSrc && iDest != iSource) {
-                    // move item
-                    var t = pictures[iSource];
-                    pictures.RemoveAt(iSource);
-                    pictures.Insert(iDest, t);
-                    picBox.SelectedIndex = iDest;
-                    return;
-                }
+                var t = pictures[iSource];
+                pictures.RemoveAt(iSource);
+                pictures.Insert(iDest, t);
+                picBox.SelectedIndex = iDest;                    
             }            
         }
+
+
+        private int IndexOf(object sender) => 
+            pictures.TakeWhile(p => p.ImageSrc != (sender as Image).Source).Count();
+
         #endregion
 
+
+    }
+
+
+    public class WindowCommands
+    {
+        static WindowCommands()
+        {
+            Add = new RoutedUICommand("Add...", "Add", typeof(MainWindow));
+        }
+        public static RoutedUICommand Add { get; set; }
     }
 }
