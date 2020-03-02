@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,16 +39,10 @@ namespace PicturesWpf
             picBox.SelectedIndex = 0;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         protected void FileExit_Click(object sender, RoutedEventArgs args)
-        {            
+        {    
             Close();
         }
-
  
         private void NewCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -56,7 +51,11 @@ namespace PicturesWpf
 
         private void NewCmdExecuted(object sender, RoutedEventArgs e)
         {
-            pictures.Clear();
+            if (pictures.IsChanged)
+            {
+                if (!HasToCancel())
+                   pictures.Clear();
+            }            
         }
 
         private void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -66,6 +65,12 @@ namespace PicturesWpf
 
         private void OpenCmdExecuted(object sender, RoutedEventArgs e)
         {
+            if (pictures.IsChanged)
+            {
+                if (HasToCancel())
+                    return;
+            }
+
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
                 dialog.SelectedPath = ConfigurationManager.AppSettings.Get("path"); 
@@ -183,11 +188,28 @@ namespace PicturesWpf
 
         #endregion
 
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (pictures.IsChanged)
+            {
+                if (HasToCancel())
+                    e.Cancel = true;
+            }
+        }
+
+        private bool HasToCancel()
+        {
+            const string MES = "There not saved data in application. Do you want save its?";
+            var result = MessageBox.Show(MES, "", MessageBoxButton.YesNoCancel);
+            if (result == MessageBoxResult.Yes)
+                pictures.Save();            
+            return result == MessageBoxResult.Cancel;
+        }
 
     }
 
 
-    public class WindowCommands
+    public static class WindowCommands
     {
         static WindowCommands()
         {

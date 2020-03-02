@@ -16,6 +16,18 @@ namespace PicturesWpf.Models
 
         public string Path { get; private set; }
 
+        public bool IsChanged
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Path))
+                    return Count > 0;
+                string path = Combine(Path, INDEX);
+                string line = File.ReadAllText(path).Trim();
+                return line != IndexAsString();
+            }
+        }
+
         public PictureCollection() {
             Add(new Picture { 
                 FileName = "", Title = "Anonimus", 
@@ -50,9 +62,8 @@ namespace PicturesWpf.Models
             if (path != null)
                 Path = path;
             try {
-                string text = string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
                 string filePath = Combine(Path, INDEX);
-                File.WriteAllText(filePath, text); 
+                File.WriteAllText(filePath, IndexAsString()); 
                 foreach (var picture in this)
                 {
                     WriteImage(picture.ImageSrc, Combine(Path, picture.FileName));
@@ -63,7 +74,6 @@ namespace PicturesWpf.Models
                 throw new ApplicationException("Cannot save the collection.", ex);
             }
         }
-
 
         public Picture New(string fileName)
         {
@@ -76,6 +86,8 @@ namespace PicturesWpf.Models
             Add(newPicture);
             return newPicture;
         }
+
+
 
         private static List<Picture> ReadData(string path)
         {
@@ -130,7 +142,9 @@ namespace PicturesWpf.Models
             }
         }
 
-
+        private string IndexAsString() =>
+            string.Join("\r\n", this.Select(p => p.FileName + "\r\n" + p.Title).ToArray());
+ 
     }
 
 }

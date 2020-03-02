@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local ="clr-namespace:PicturesWpf"
         mc:Ignorable="d"
-        Title="[New] - Pictures" MinHeight="400" MinWidth="300" Loaded="Window_Loaded" >
+        Title="[New] - Pictures" MinHeight="400" MinWidth="300" Closing="Window_Closing" >
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.New"
             Executed="NewCmdExecuted"
